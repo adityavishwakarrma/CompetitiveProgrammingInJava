@@ -207,11 +207,11 @@ public class MinWindowSubstr {
         }
     }
 
-    public String minWindow(String s, String t) {
+    public String minWindow2(String s, String t) {
         Integer minWinLen = Integer.MAX_VALUE, minWinStart = -1;
         Result result = new Result(minWinLen, minWinStart);
 
-        int l=0, r=0;
+        int l = 0, r = 0;
 
         HashMap<Character, Integer> sFreqMap = getFreqMap(new StringBuilder());
         HashMap<Character, Integer> tFreqMap = getFreqMap(new StringBuilder(t));
@@ -223,12 +223,11 @@ public class MinWindowSubstr {
         }
 
 
-
-        for(; r<s.length(); r++){
+        for (; r < s.length(); r++) {
             char c = s.charAt(r);
-            if(tFreqMap.get(c) != 0){
-                sFreqMap.compute(c, (k,v) -> v+1);
-                if(Objects.equals(sFreqMap.get(c), tFreqMap.get(c))){
+            if (tFreqMap.get(c) != 0) {
+                sFreqMap.compute(c, (k, v) -> v + 1);
+                if (Objects.equals(sFreqMap.get(c), tFreqMap.get(c))) {
                     have++;
                 }
             }
@@ -242,27 +241,27 @@ public class MinWindowSubstr {
 //            }
 
             //match & record
-            if(match(sFreqMap, tFreqMap)){
+            if (match(have, need)) {
 //                record(l,r,minWinLen, minWinStart);
 
                 //try shrinking if not match revert
                 do {
                     char c1 = s.charAt(l);
                     l++;
-                    if(tFreqMap.get(c1) != 0){
+                    if (tFreqMap.get(c1) != 0) {
                         boolean toChange1 = false, toChange2 = false;
-                        if(sFreqMap.get(c1) >= tFreqMap.get(c1)){
+                        if (sFreqMap.get(c1) >= tFreqMap.get(c1)) {
                             toChange1 = true;
                         }
-                        sFreqMap.compute(c1, (k,v) -> v-1);
-                        if(sFreqMap.get(c1) < tFreqMap.get(c1)){
+                        sFreqMap.compute(c1, (k, v) -> v - 1);
+                        if (sFreqMap.get(c1) < tFreqMap.get(c1)) {
                             toChange2 = true;
                         }
-                        if(toChange1 && toChange2){
+                        if (toChange1 && toChange2) {
                             have--;
                         }
                     }
-                     // have -- shrinking logic
+                    // have -- shrinking logic
 //                    if (tFreqMap.get(c1) != 0) {
 //                        int oldFreq = sFreqMap.get(c1);
 //                        sFreqMap.compute(c1, (k, v) -> v - 1);
@@ -270,22 +269,22 @@ public class MinWindowSubstr {
 //                            have--;
 //                        }
 //                    }
-                }while(match(sFreqMap, tFreqMap));
+                } while (match(have, need));
 
-                if(!match(sFreqMap, tFreqMap)){
+                if (!match(have, need)) {
                     //revert the last change
                     l--;
                     char c1 = s.charAt(l);
-                    if(tFreqMap.get(c1) != 0){
+                    if (tFreqMap.get(c1) != 0) {
                         boolean toChange1 = false, toChange2 = false;
-                        if(sFreqMap.get(c) < tFreqMap.get(c)){
+                        if (sFreqMap.get(c) < tFreqMap.get(c)) {
                             toChange1 = true;
                         }
-                        sFreqMap.compute(c1, (k,v) -> v+1);
-                        if(sFreqMap.get(c1) >= tFreqMap.get(c1)){
+                        sFreqMap.compute(c1, (k, v) -> v + 1);
+                        if (sFreqMap.get(c1) >= tFreqMap.get(c1)) {
                             toChange2 = true;
                         }
-                        if(toChange1 && toChange2){
+                        if (toChange1 && toChange2) {
                             have++;
                         }
                     }
@@ -299,18 +298,18 @@ public class MinWindowSubstr {
 //                    }
                 }
 
-                if(match(sFreqMap, tFreqMap)) {
+                if (match(have, need)) {
                     record(l, r, result);
                 }
             }
         }
 
-        return result.getMinWinLen().equals(Integer.MAX_VALUE) ?  "" : s.substring(result.getMinWinStart(), result.getMinWinStart()+result.getMinWinLen());
+        return result.getMinWinLen().equals(Integer.MAX_VALUE) ? "" : s.substring(result.getMinWinStart(), result.getMinWinStart() + result.getMinWinLen());
     }
 
-    private void record(int l, int r, Result result){
-        int winLen = r-l+1;
-        if(result.getMinWinLen() > winLen){
+    private void record(int l, int r, Result result) {
+        int winLen = r - l + 1;
+        if (result.getMinWinLen() > winLen) {
             result.setMinWinStart(l);
             result.setMinWinLen(winLen);
         }
@@ -325,11 +324,90 @@ public class MinWindowSubstr {
         return true;
     }
 
-    private void compareM(HashMap<Character, Integer> sFreqMap, HashMap<Character, Integer> tFreqMap, Integer have, Integer need) {
-        for(var e : tFreqMap.entrySet()){
-             if(sFreqMap.getOrDefault(e.getKey(),0) >= e.getValue()){
-                 have++;
-             }
+    private boolean match(Integer have, Integer need) {
+        return have.equals(need);
+    }
+
+
+    public String minWindow3(String s, String t) {
+        int start = -1, end = -1, minWindowLength = Integer.MAX_VALUE;
+
+        HashMap<Character, Integer> tFreqMap = getFreqMapNew(t);
+        HashMap<Character, Integer> sFreqMap = new HashMap<>();
+
+        int i=0, j=0;
+        int have = 0, need = tFreqMap.size();
+
+        //expand j till match found
+//        capture every j
+//        j++
+//        match found stop
+        for(;;){
+            char c = s.charAt(j);
+
+            //process this char only if it is from t
+            if(tFreqMap.containsKey(c)){
+                sFreqMap.merge(c, 1, Integer::sum);
+                if(Objects.equals(sFreqMap.get(c), tFreqMap.get(c))){
+                    have++;
+                }
+            }
+
+            j++;
+
+            if(have == need){
+                break;
+            }
         }
+
+        //calc substring
+        int len = j-i+1;
+        if(minWindowLength > len){
+            start = i;
+            end = j;
+            minWindowLength = len;
+        }
+
+        //next j values we will process here
+
+        for(; j<s.length(); j++){
+        // process the new char at j
+          //process this char only if it is from t
+            char c = s.charAt(j);
+            if(tFreqMap.containsKey(c)){
+                sFreqMap.merge(c, 1, Integer::sum);
+//                already a match
+//                try shrinking window from left side till possible (match condition is valid)
+                while (tFreqMap.containsKey(s.charAt(i)) && sFreqMap.get(s.charAt(i)) >= tFreqMap.get(s.charAt(i))){
+                    char ch = s.charAt(i);
+                    int oldSFreq = sFreqMap.get(ch);
+                    int newSFreq = oldSFreq - 1;
+                    boolean match = newSFreq >= tFreqMap.get(ch);
+                    if (match) {
+                        // finalize
+                        i++;
+                        sFreqMap.put(ch, newSFreq);
+
+                        //calc substring
+                        len = j - i + 1;
+                        if (minWindowLength > len) {
+                            start = i;
+                            end = j;
+                            minWindowLength = len;
+                        }
+                    }
+                }
+            }
+        }
+
+        return (Integer.MAX_VALUE ==  minWindowLength) ? "" : s.substring(start, end);
+    }
+
+    private HashMap<Character, Integer> getFreqMapNew(String t) {
+        HashMap<Character, Integer> freqMap = new HashMap<>();
+        for (char c : t.toCharArray()) {
+            freqMap.merge(c, 1, Integer::sum);
+        }
+        return freqMap;
     }
 }
