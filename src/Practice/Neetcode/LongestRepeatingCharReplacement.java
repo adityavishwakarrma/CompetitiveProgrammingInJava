@@ -253,6 +253,57 @@ public class LongestRepeatingCharReplacement {
 //        return false;
     }
 
+
+
+
+
+
+
+    static public int characterReplacementClean(String s, int k) {
+        char[] str = s.toCharArray();
+        int start = 0, end = 0, n = s.length();
+
+        int maxLen = 0;
+
+        HashMap<Character, Integer> hm = new HashMap<>();
+        maxLen = 1;
+
+        while(end < n){
+            hm.merge(str[end], 1, Integer::sum);
+
+            while (start < end && !possible(hm, k)){
+                hm.merge(str[start], -1, Integer::sum);
+                start++;
+            }
+            if(possible(hm, k) && maxLen < end-start+1){
+                maxLen = end-start+1;
+            }
+
+            end++;
+        }
+
+        return maxLen;
+    }
+
+    static private boolean possibleClean(HashMap<Character, Integer> hm, int k) {
+        if (hm.size() == 1) {
+            return true;
+        }
+
+        List<Map.Entry<Character, Integer>> sortedEntries = new ArrayList<>(hm.entrySet());
+        sortedEntries.sort(Comparator.comparing(Map.Entry::getValue));
+
+        for (int i=0; i<=sortedEntries.size()-2; i++) {
+            k -= sortedEntries.get(i).getValue();
+            if(k<0){
+                return false;
+            }
+        }
+
+        return k>=0;
+    }
+
+
     public static void main(String[] args) {
         String s="AABABBA";
         int k=1;
