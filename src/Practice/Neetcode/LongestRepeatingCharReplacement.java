@@ -181,7 +181,7 @@ public class LongestRepeatingCharReplacement {
         maxLen = 1;
 
         while(end < n){                                 // yaha par start < end nahi ayega, ayega bhi to start <= end ayega
-//            hm.merge(str[end], 1, Integer::sum);
+//            hm.merge(str[end], 1, Integer::sum);   // this is the last mistake which is corrected now
 
 
             System.out.println("StartEnd" + start + " " + end + " returning isPossible:" + possible(hm, k));
