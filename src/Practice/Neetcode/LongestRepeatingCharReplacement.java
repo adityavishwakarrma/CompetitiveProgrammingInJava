@@ -1,8 +1,6 @@
 package Practice.Neetcode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 public class LongestRepeatingCharReplacement {
 
@@ -190,12 +188,12 @@ public class LongestRepeatingCharReplacement {
                 hm.merge(str[start], -1, Integer::sum);
                 start++;
             }
-            if(!possible(hm, k)){
-                start--;
-                hm.compute(str[start], (key,value) -> value+1);
-            }
+//            if(!possible(hm, k)){
+//                start--;
+//                hm.compute(str[start], (key,value) -> value+1);
+//            }
 
-            if(maxLen < end-start+1){
+            if(possible(hm, k) && maxLen < end-start+1){
                     maxLen = end-start+1;
                     System.out.print(" changing this time len: " + maxLen + "\n" );
             }
@@ -209,23 +207,50 @@ public class LongestRepeatingCharReplacement {
     }
 
    static private boolean possible(HashMap<Character, Integer> hm, int k) {
-        if(hm.size() == 2) {
-            int minV = Integer.MAX_VALUE;
-            int maxV = Integer.MIN_VALUE;
-            for (Integer value : hm.values()) {
-                minV = Math.min(minV, value);
-                maxV = Math.max(maxV, value);
+
+       if (hm.size() == 1) {
+           return true;
+       }              //last ke baad ye sab changes
+
+       List<Map.Entry<Character, Integer>> sortedEntries = new ArrayList<>(hm.entrySet());
+       sortedEntries.sort(Comparator.comparing(Map.Entry::getValue));
+
+       int i=0;
+       for (Map.Entry<Character, Integer> sortedEntry : sortedEntries) {
+            if(i == sortedEntries.size()-1){
+                break;
             }
 
-            boolean isValidHm = minV <= k;
-            System.out.print(minV + " " + k + " ...." + hm.toString() + "...." + "\n");
-            return isValidHm;
-        }
-        else if (hm.size() == 1) {
-            return true;
-        }
+           k -= sortedEntry.getValue();
+           if(k<0){
+               return false;
+           }
+           i++;
+       }
 
-        return false;
+       //ueske bad ye
+//       return k==0;     //ye bhi ek galti hai
+       return k>=0;
+
+
+//       if(hm.size() == 2) {
+//            int minV = Integer.MAX_VALUE;
+//            int maxV = Integer.MIN_VALUE;
+//            for (Integer value : hm.values()) {
+//                minV = Math.min(minV, value);
+//                maxV = Math.max(maxV, value);
+//            }
+//
+//            boolean isValidHm = minV <= k;
+//            System.out.print(minV + " " + k + " ...." + hm.toString() + "...." + "\n");
+//            return isValidHm;
+//        }
+//        else
+//        if (hm.size() == 1) {
+//            return true;
+//        }
+//
+//        return false;
     }
 
     public static void main(String[] args) {
