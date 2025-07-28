@@ -178,10 +178,16 @@ public class LongestRepeatingCharReplacement {
 
         HashMap<Character, Integer> hm = new HashMap<>();
         hm.put(str[start], 1);
+        maxLen = 1;
 
         while(end < n){                                 // yaha par start < end nahi ayega, ayega bhi to start <= end ayega
+//            hm.merge(str[end], 1, Integer::sum);
+
+
+            System.out.println("StartEnd" + start + " " + end + " returning isPossible:" + possible(hm, k));
             while (start < end && !possible(hm, k)){    // start < end laga sakte hai yaha par
-                hm.compute(str[start], (key,value) -> value-1);
+//                hm.compute(str[start], (key,value) -> value-1);
+                hm.merge(str[start], -1, Integer::sum);
                 start++;
             }
             if(!possible(hm, k)){
@@ -189,10 +195,14 @@ public class LongestRepeatingCharReplacement {
                 hm.compute(str[start], (key,value) -> value+1);
             }
 
-            maxLen = Math.max(maxLen, end-start+1);
+            if(maxLen < end-start+1){
+                    maxLen = end-start+1;
+                    System.out.print(" changing this time len: " + maxLen + "\n" );
+            }
 
-            hm.merge(str[end], 1, Integer::sum);
-            end++;
+            if(++end < n)
+                hm.merge(str[end], 1, Integer::sum);
+//            end++;
         }
 
         return maxLen;
@@ -208,6 +218,7 @@ public class LongestRepeatingCharReplacement {
             }
 
             boolean isValidHm = minV <= k;
+            System.out.print(minV + " " + k + " ...." + hm.toString() + "...." + "\n");
             return isValidHm;
         }
         else if (hm.size() == 1) {
